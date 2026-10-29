@@ -27,6 +27,10 @@ function App() {
     setAmount("");
   }
 
+  function handleDel(id: string) {
+    setTransactions(transactions.filter((x) => x.id !== id));
+  }
+
   return (
     <div>
       <input placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
@@ -46,6 +50,15 @@ function App() {
         }}
         />
       </div>
+      <ul>
+        {transactions.map((t) => (
+          <li key={t.id}>
+            
+            {t.date}: {t.amount} ₽
+            <button onClick={() => handleDel(t.id)}>Удалить</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
