@@ -1,19 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { remaining, progressPercent, totalSaved, type Transaction, type Goal } from "./goal";
 
 function App() {
   // Состояние для трех полей
-  const [title, setTitle] = useState("");
-  const [targetAmount, setTargetAmount] = useState("");
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [title, setTitle] = useState(() => load("title"));
+  const [targetAmount, setTargetAmount] = useState(() => load("targetAmount"));
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const saved = localStorage.getItem("transactions");
+      return saved ? JSON.parse(saved) : [];  // Переводим строку обратно в массив
+    } catch {
+      return [];
+    }
+  });
   const [amount, setAmount] = useState("");
+
+
+  // Сохранение состояния значений при обновлении страницы
+  useEffect(() => {
+    localStorage.setItem("transactions", JSON.stringify(transactions)); // Массив переводим в строку
+  }, [transactions])
+
+  useEffect(() => {
+    localStorage.setItem("title", title);
+  }, [title]);
+
+
+  useEffect(() => {
+    localStorage.setItem("targetAmount", targetAmount);
+  }, [targetAmount]);
 
   const goal: Goal = {
     title,
     targetAmount: Number(targetAmount),
     savedAmount: totalSaved(transactions),
-  }
+  };
 
+  // Фунция для чтения при запуске
+  function load(key: string): string {
+    try {
+      return localStorage.getItem(key) ?? "";
+    } catch {
+      return "";
+    }
+  };
+
+  // Добавление операций
   function handleAdd() {
     const value = Number(amount);
     if (!value) return;
@@ -25,11 +57,12 @@ function App() {
     };
     setTransactions([...transactions, newTransaction]);
     setAmount("");
-  }
+  };
 
+  // Удаление операций
   function handleDel(id: string) {
     setTransactions(transactions.filter((x) => x.id !== id));
-  }
+  };
 
   return (
     <div>
@@ -40,6 +73,7 @@ function App() {
       <button onClick={handleAdd}>Отложить</button>
       <p>Осталось накопить: {remaining(goal)} ₽</p>
       <p>Выполнено: {progressPercent(goal)} %</p>
+      {/* Шкала заполнения */}
       <div style={{background: "#444", height: 12, borderRadius: 6, width: 300}}>
         <div
         style={{
@@ -50,6 +84,7 @@ function App() {
         }}
         />
       </div>
+      {/* Список добавленных операций с датой и суммой */}
       <ul>
         {transactions.map((t) => (
           <li key={t.id}>
