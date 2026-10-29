@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { remaining, progressPercent, totalSaved, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, type Transaction, type Goal } from "./goal";
 
 function App() {
   // Состояние для трех полей
   const [title, setTitle] = useState(() => load("title"));
+  const [deadline, setDeadline] = useState(() => load("deadline"));
   const [targetAmount, setTargetAmount] = useState(() => load("targetAmount"));
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
       const saved = localStorage.getItem("transactions");
-      return saved ? JSON.parse(saved) : [];  // Переводим строку обратно в массив
+      return saved ? JSON.parse(saved) : [];   // переводим строку обратно  в массив
     } catch {
       return [];
     }
@@ -16,34 +17,40 @@ function App() {
   const [amount, setAmount] = useState("");
 
 
-  // Сохранение состояния значений при обновлении страницы
+  // Сохранение состояния при обноволении страницы
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions)); // Массив переводим в строку
+    localStorage.setItem("transactions", JSON.stringify(transactions)); // Переводим массив в строку
   }, [transactions])
 
   useEffect(() => {
     localStorage.setItem("title", title);
   }, [title]);
 
-
   useEffect(() => {
     localStorage.setItem("targetAmount", targetAmount);
   }, [targetAmount]);
+
+  useEffect(() => {
+    localStorage.setItem("deadline", deadline);
+  }, [deadline]);
 
   const goal: Goal = {
     title,
     targetAmount: Number(targetAmount),
     savedAmount: totalSaved(transactions),
-  };
+    deadline,
+  }
 
-  // Фунция для чтения при запуске
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Функция чтение записи 
   function load(key: string): string {
     try {
       return localStorage.getItem(key) ?? "";
     } catch {
       return "";
     }
-  };
+  }
 
   // Добавление операций
   function handleAdd() {
@@ -57,16 +64,22 @@ function App() {
     };
     setTransactions([...transactions, newTransaction]);
     setAmount("");
-  };
+  }
 
   // Удаление операций
   function handleDel(id: string) {
     setTransactions(transactions.filter((x) => x.id !== id));
-  };
+  }
 
   return (
     <div>
       <input placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
+      <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
+      <p>
+        {deadline
+         ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
+         : "Укажите срок"}
+      </p>
       <input placeholder="Сумма цели" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
       <input placeholder="Сумма пополнения" type="number" value={amount}
         onChange={(e) => setAmount(e.target.value)} />

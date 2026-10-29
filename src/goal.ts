@@ -3,6 +3,7 @@ export type Goal = {
     title: string;
     targetAmount: number;
     savedAmount: number;
+    deadline: string;
 };
 
 // Функция остатка
@@ -25,6 +26,14 @@ export type Transaction = {
     date: string;
 }
 
+// Функция суммированания списка операций
 export function totalSaved(transactions: Transaction[]): number {
     return transactions.reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function monthlyNeeded(goal: Goal, today: string): number {
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const days = (new Date(goal.deadline).getTime() - new Date(today).getTime()) / msPerDay;
+    const months = Math.max(1, days / 30);
+    return Math.ceil(remaining(goal) / months);
 }
