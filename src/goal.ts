@@ -17,3 +17,14 @@ export function progressPercent(goal: Goal): number {
     }
     return Math.round(((goal.savedAmount / goal.targetAmount) * 100) * 100) / 100;
 }
+
+// Список операций. Массив пополнений
+export type Transaction = {
+    id: string;
+    amount: number;
+    date: string;
+}
+
+export function totalSaved(transactions: Transaction[]): number {
+    return transactions.reduce((sum, t) => sum + t.amount, 0);
+}
