@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { remaining, progressPercent, totalSaved, monthlyNeeded, type Transaction, type Goal } from "./goal";
+import "./App.css";
 
 function App() {
   // Состояние для трех полей
@@ -72,27 +73,28 @@ function App() {
   }
 
   return (
-    <div>
-      <input placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
-      <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
-      <p>
+    <div className="card">
+      <label htmlFor="">Название
+        <input className="field" placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
+      </label>
+      <label htmlFor="">Срок
+        <input className="field" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
+      </label>
+      <p className="term">
         {deadline
          ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
          : "Укажите срок"}
       </p>
-      <input placeholder="Сумма цели" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
-      <input placeholder="Сумма пополнения" type="number" value={amount}
+      <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
+      <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
         onChange={(e) => setAmount(e.target.value)} />
-      <button onClick={handleAdd}>Отложить</button>
-      <p>Осталось накопить: {remaining(goal)} ₽</p>
-      <p>Выполнено: {progressPercent(goal)} %</p>
+      <button className="btn" onClick={handleAdd}>Отложить</button>
+      <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
+      <p className="result">Выполнено: {progressPercent(goal)} %</p>
       {/* Шкала заполнения */}
-      <div style={{background: "#444", height: 12, borderRadius: 6, width: 300}}>
-        <div
+      <div className="scale-block">
+        <div className="scale"
         style={{
-          background: "#4caf50",
-          height: "100%",
-          borderRadius: 6,
           width: `${Math.min(100, progressPercent(goal))}%`,
         }}
         />
@@ -100,10 +102,10 @@ function App() {
       {/* Список добавленных операций с датой и суммой */}
       <ul>
         {transactions.map((t) => (
-          <li key={t.id}>
+          <li className="ul-li" key={t.id}>
             
             {t.date}: {t.amount} ₽
-            <button onClick={() => handleDel(t.id)}>Удалить</button>
+            <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>
           </li>
         ))}
       </ul>
