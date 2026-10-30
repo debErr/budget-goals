@@ -85,9 +85,13 @@ function App() {
          ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
          : "Укажите срок"}
       </p>
-      <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
-      <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
-        onChange={(e) => setAmount(e.target.value)} />
+      <label htmlFor="">Сумма цели
+        <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
+      </label>
+      <label htmlFor="">Сумма пополнния
+        <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
+          onChange={(e) => setAmount(e.target.value)} />
+      </label>
       <button className="btn" onClick={handleAdd}>Отложить</button>
       <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
       <p className="result">Выполнено: {progressPercent(goal)} %</p>
