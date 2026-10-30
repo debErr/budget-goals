@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, type Transaction, type Goal } from "./goal";
 import "./App.css";
 
 function App() {
@@ -37,7 +37,7 @@ function App() {
 
   const goal: Goal = {
     title,
-    targetAmount: Number(targetAmount),
+    targetAmount: positiveOrZero(Number(targetAmount)),
     savedAmount: totalSaved(transactions),
     deadline,
   }
@@ -72,47 +72,54 @@ function App() {
     setTransactions(transactions.filter((x) => x.id !== id));
   }
 
+  // Меньше ли 0?
+  function handleTargetChange(value: string) {
+    setTargetAmount(Number(value) < 0 ? "0" : value);
+  }
+
   return (
-    <div className="card">
-      <label htmlFor="">Название
-        <input className="field" placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
-      </label>
-      <label htmlFor="">Срок
-        <input className="field" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
-      </label>
-      <p className="term">
-        {deadline
-         ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
-         : "Укажите срок"}
-      </p>
-      <label htmlFor="">Сумма цели
-        <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => setTargetAmount(e.target.value)} />
-      </label>
-      <label htmlFor="">Сумма пополнния
-        <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
-          onChange={(e) => setAmount(e.target.value)} />
-      </label>
-      <button className="btn" onClick={handleAdd}>Отложить</button>
-      <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
-      <p className="result">Выполнено: {progressPercent(goal)} %</p>
-      {/* Шкала заполнения */}
-      <div className="scale-block">
-        <div className="scale"
-        style={{
-          width: `${Math.min(100, progressPercent(goal))}%`,
-        }}
-        />
+    <div className="budget-block">
+      <div className="card">
+        <label htmlFor="">Название
+          <input className="field" placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
+        </label>
+        <label htmlFor="">Срок
+          <input className="field" min={today} type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
+        </label>
+        <p className="term">
+          {deadline
+          ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
+          : "Укажите срок"}
+        </p>
+        <label htmlFor="">Сумма цели
+          <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => handleTargetChange(e.target.value)} />
+        </label>
+        <label htmlFor="">Сумма пополнния
+          <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
+            onChange={(e) => setAmount(e.target.value)} />
+        </label>
+        <button className="btn" onClick={handleAdd}>Отложить</button>
+        <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
+        <p className="result">Выполнено: {progressPercent(goal)} %</p>
+        {/* Шкала заполнения */}
+        <div className="scale-block">
+          <div className="scale"
+          style={{
+            width: `${Math.min(100, progressPercent(goal))}%`,
+          }}
+          />
+        </div>
+        {/* Список добавленных операций с датой и суммой */}
+        <ul>
+          {transactions.map((t) => (
+            <li className="ul-li" key={t.id}>
+              
+              {t.date}: {t.amount} ₽
+              <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>
+            </li>
+          ))}
+        </ul>
       </div>
-      {/* Список добавленных операций с датой и суммой */}
-      <ul>
-        {transactions.map((t) => (
-          <li className="ul-li" key={t.id}>
-            
-            {t.date}: {t.amount} ₽
-            <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

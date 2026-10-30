@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, type Transaction, type Goal } from "./goal";
 
 test("remaining считает остаток", () => {
     const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27"
@@ -77,3 +77,15 @@ test("monthlyNeeded: срок в прошлом", () => {
     expect(monthlyNeeded(goal, "2026-11-01")).toBe(90000);
 })
 
+test("positiveOrZero: отрицательное число становится нулём", () => {
+    expect(positiveOrZero(-5000)).toBe(0);
+})
+
+
+test("positiveOrZero: ноль остаётся нулём", () => {
+    expect(positiveOrZero(0)).toBe(0);
+})
+
+test("positiveOrZero: положительное не меняется", () => {
+    expect(positiveOrZero(5000)).toBe(5000);
+})

@@ -1,5 +1,28 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  font-family: sans-serif;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Sergio UI", Roboto, sans-serif;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+input, button {
+  font: inherit;
+  font-size: 16px;
+}
+
+.budget-block {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+
 }
 
 .result {
@@ -9,12 +32,18 @@ body {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
   max-width: 400px;
-  margin: 40px auto;
   padding: 24px;
   border-radius: 12px;
   background: #1f2330;
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .field {
@@ -25,6 +54,7 @@ body {
   box-sizing: border-box;
   border-radius: 6px;
   color-scheme: dark;
+  font-size: 16px;
 }
 
 .field:focus, .btn:focus-visible { outline: 2px solid #4caf50; }
@@ -36,11 +66,19 @@ body {
   outline: none;
   cursor: pointer;
   transition: .3s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
 }
 
 .btn:hover {
   color: #1f2330;
   background-color: #fff;
+}
+
+.field, .btn {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 8px;
 }
 
 .term {
@@ -54,13 +92,13 @@ body {
 
 .scale-block {
   background: #444;
-  height: 12px;
-  border-radius: 6px;
+  height: 40px;
+  border-radius: 5px;
   width: 100%;
 }
 
 .scale {
   background: #4caf50;
   height: 100%;
-  border-radius: 6;
+  border-radius: 5  px;
 }
