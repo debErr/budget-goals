@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, type Transaction, type Goal } from "./goal";
 import "./App.css";
 
@@ -16,6 +16,7 @@ function App() {
     }
   });
   const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
 
 
   // Сохранение состояния при обноволении страницы
@@ -57,6 +58,10 @@ function App() {
   function handleAdd() {
     const value = Number(amount);
     if (!value) return;
+    if (totalSaved(transactions) + value < 0) {
+      setError("Нельзя снимать больше отложенной суммы");
+      return;
+    }
 
     const newTransaction: Transaction = {
       id: crypto.randomUUID(),
@@ -65,6 +70,7 @@ function App() {
     };
     setTransactions([...transactions, newTransaction]);
     setAmount("");
+    setError("");
   }
 
   // Удаление операций
@@ -72,7 +78,7 @@ function App() {
     setTransactions(transactions.filter((x) => x.id !== id));
   }
 
-  // Меньше ли 0?
+  // Меньше ли сумма цели 0?
   function handleTargetChange(value: string) {
     setTargetAmount(Number(value) < 0 ? "0" : value);
   }
@@ -94,11 +100,16 @@ function App() {
         <label htmlFor="">Сумма цели
           <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => handleTargetChange(e.target.value)} />
         </label>
-        <label htmlFor="">Сумма пополнния
-          <input className="field" placeholder="Сумма пополнения" min="0" type="number" value={amount}
-            onChange={(e) => setAmount(e.target.value)} />
+        <label htmlFor="">Сумма пополнения
+          <input className="field" placeholder="Сумма пополнения" type="number" value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              setError("");
+            }} 
+          />
         </label>
-        <button className="btn" onClick={handleAdd}>Отложить</button>
+        {error && <p className="error">{error}</p>}
+        <button className="btn" onClick={handleAdd}>Пополнить</button>
         <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
         {/* Шкала заполнения */}

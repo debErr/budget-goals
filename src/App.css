@@ -102,3 +102,8 @@ label {
   height: 100%;
   border-radius: 5  px;
 }
+
+.error {
+  color: #ff6b6b;
+  font-size: 14px;
+}
