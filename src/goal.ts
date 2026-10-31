@@ -43,3 +43,14 @@ export function monthlyNeeded(goal: Goal, today: string): number {
 export function positiveOrZero(amount: number): number {
     return amount < 0 ? 0 : amount;
 }
+
+// Функция раздедителя числа
+export function formatNumber(amount: number): string { 
+    return amount.toLocaleString("ru-RU");
+}
+
+// Функциия форматирвоания даты
+export function formatDate(date: string): string {
+    const formatedDate = date.split("-");
+    return formatedDate.reverse().join(".");
+}

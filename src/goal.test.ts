@@ -1,33 +1,28 @@
 import { test, expect } from "vitest";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, type Transaction, type Goal } from "./goal";
 
 test("remaining считает остаток", () => {
-    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27"
-    };
+    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27" };
     expect(remaining(goal)).toBe(673000);   
 });
 
 test("Накоплено больше цели", () => {
-    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 850000, deadline: "2026-10-27"
-    };
+    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 850000, deadline: "2026-10-27" };
     expect(remaining(goal)).toBe(0);
 });
 
 test("Процент от цели", () => {
-    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27"
-    };
+    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27" };
     expect(progressPercent(goal)).toBe(15.88);
 });
 
 test("Превышено больше цели", () => {
-    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 850000, deadline: "2026-10-27"
-    };
+    const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 850000, deadline: "2026-10-27" };
     expect(progressPercent(goal)).toBe(106.25);
 });
 
 test("Цель равно 0", () => {
-    const goal: Goal = { title: "Машина", targetAmount: 0, savedAmount: 800000, deadline: "2026-10-27"
-    };
+    const goal: Goal = { title: "Машина", targetAmount: 0, savedAmount: 800000, deadline: "2026-10-27" };
     expect(progressPercent(goal)).toBe(0);
 });
 
@@ -89,3 +84,15 @@ test("positiveOrZero: ноль остаётся нулём", () => {
 test("positiveOrZero: положительное не меняется", () => {
     expect(positiveOrZero(5000)).toBe(5000);
 })
+
+test("formatNumber: разделяет число", () => {
+    expect(formatNumber(10000).replace(/\s/g, " ")).toBe("10 000");
+    expect(formatNumber(1000000).replace(/\s/g, " ")).toBe("1 000 000");
+    expect(formatNumber(500).replace(/\s/g, " ")).toBe("500");
+    expect(formatNumber(0).replace(/\s/g, " ")).toBe("0");
+})
+
+test("formatDate: дата форматируется", () => {
+    expect(formatDate("2026-10-31")).toBe("31.10.2026");
+})
+

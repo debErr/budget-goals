@@ -1,5 +1,5 @@
-import { useState, useEffect, use } from "react";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, type Transaction, type Goal } from "./goal";
+import { useState, useEffect} from "react";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, type Transaction, type Goal } from "./goal";
 import "./App.css";
 
 function App() {
@@ -38,12 +38,13 @@ function App() {
 
   const goal: Goal = {
     title,
-    targetAmount: positiveOrZero(Number(targetAmount)),
+    targetAmount:positiveOrZero(Number(targetAmount)),
     savedAmount: totalSaved(transactions),
     deadline,
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("sv-SE");
+  const isExpired = deadline !== "" && deadline < today;
 
   // Функция чтение записи 
   function load(key: string): string {
@@ -63,10 +64,25 @@ function App() {
       return;
     }
 
+    if (!deadline) {
+      setError("Сначала укажите срок!");
+      return;
+    };
+
+    if (isExpired) {
+      setError("Срок уже прошёл, измените его!");
+      return;
+    };
+
+    if (!targetAmount || Number(targetAmount) <= 0) {
+      setError("Укажите сначала сумму цели!");
+      return;
+    }
+
     const newTransaction: Transaction = {
       id: crypto.randomUUID(),
       amount: value,
-      date: new Date().toISOString().slice(0, 10),
+      date: today,
     };
     setTransactions([...transactions, newTransaction]);
     setAmount("");
@@ -86,21 +102,24 @@ function App() {
   return (
     <div className="budget-block">
       <div className="card">
-        <label htmlFor="">Название
+        <label>Название
           <input className="field" placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
         </label>
-        <label htmlFor="">Срок
+        <label>Срок
           <input className="field" min={today} type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
         </label>
         <p className="term">
-          {deadline
-          ? `Откладывать в месяц: ${monthlyNeeded(goal, today)} ₽`
-          : "Укажите срок"}
+          {!deadline
+          ? "Укажите срок"
+          : isExpired
+            ? "Срок уже прошёл"
+            : `Откладывать в месяц: ${formatNumber(monthlyNeeded(goal, today))} ₽`
+          }
         </p>
-        <label htmlFor="">Сумма цели
+        <label>Сумма цели
           <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => handleTargetChange(e.target.value)} />
         </label>
-        <label htmlFor="">Сумма пополнения
+        <label>Сумма пополнения
           <input className="field" placeholder="Сумма пополнения" type="number" value={amount}
             onChange={(e) => {
               setAmount(e.target.value);
@@ -110,7 +129,7 @@ function App() {
         </label>
         {error && <p className="error">{error}</p>}
         <button className="btn" onClick={handleAdd}>Пополнить</button>
-        <p className="result">Осталось накопить: {remaining(goal)} ₽</p>
+        <p className="result">Осталось накопить: {formatNumber(remaining(goal))} ₽</p>
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
         {/* Шкала заполнения */}
         <div className="scale-block">
@@ -125,7 +144,7 @@ function App() {
           {transactions.map((t) => (
             <li className="ul-li" key={t.id}>
               
-              {t.date}: {t.amount} ₽
+              {formatDate(t.date)}: {formatNumber(t.amount)} ₽
               <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>
             </li>
           ))}
