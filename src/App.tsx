@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, expectedSaved, type Transaction, type Goal } from "./goal";
 import "./App.css";
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
   });
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
+  const [startDate, setStartDate] = useState(() => load("startDate"));
 
 
   // Сохранение состояния при обноволении страницы
@@ -36,6 +37,16 @@ function App() {
     localStorage.setItem("deadline", deadline);
   }, [deadline]);
 
+  useEffect(() => {
+    localStorage.setItem("startDate", startDate);
+  }, [startDate]);
+
+  useEffect(() => {
+    if (startDate === "" && deadline && Number(targetAmount) > 0) {
+      setStartDate(today);
+    }
+  }, [startDate, targetAmount, deadline]);
+
   const goal: Goal = {
     title,
     targetAmount:positiveOrZero(Number(targetAmount)),
@@ -45,6 +56,9 @@ function App() {
 
   const today = new Date().toLocaleDateString("sv-SE");
   const isExpired = deadline !== "" && deadline < today;
+  
+  const planned = expectedSaved(goal, startDate, today);
+  const diff = totalSaved(transactions) - planned;
 
   // Функция чтение записи 
   function load(key: string): string {
@@ -131,6 +145,19 @@ function App() {
         <button className="btn btn-add" onClick={handleAdd}>Пополнить</button>
         <p className="result">Осталось накопить: {formatNumber(remaining(goal))} ₽</p>
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
+        {startDate !== "" && deadline !== "" && (
+          <>
+            <p className="result">По плану к сегодня: {formatNumber(planned)} ₽</p>
+            <p className="result">
+              {diff === 0
+              ? "Точно по плану"
+              : diff >= 0
+                ? `Опережаете план на ${formatNumber(diff)} ₽`
+                : `Отсаёте от плана на ${formatNumber(Math.abs(diff))} ₽`
+              }
+            </p>
+          </>
+        )}
         {/* Шкала заполнения */}
         <div className="scale-block">
           <div className="scale"
