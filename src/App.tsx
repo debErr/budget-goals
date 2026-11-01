@@ -1,5 +1,6 @@
 import { useState, useEffect} from "react";
 import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, expectedSaved, type Transaction, type Goal } from "./goal";
+import { ProgressBar } from "./ProgressBar";
 import "./App.css";
 
 function App() {
@@ -145,27 +146,23 @@ function App() {
         <button className="btn btn-add" onClick={handleAdd}>Пополнить</button>
         <p className="result">Осталось накопить: {formatNumber(remaining(goal))} ₽</p>
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
-        {startDate !== "" && deadline !== "" && (
+        {startDate !== "" && deadline !== "" && remaining(goal) === 0 && (
+            <p className="result">Цель достигнута</p>
+        )}
+        {startDate !== "" && deadline !== "" && remaining(goal) > 0 && (
           <>
-            <p className="result">По плану к сегодня: {formatNumber(planned)} ₽</p>
+            <p className="result">По плану на сегодня: {formatNumber(planned)} ₽</p>
             <p className="result">
               {diff === 0
               ? "Точно по плану"
-              : diff >= 0
-                ? `Опережаете план на ${formatNumber(diff)} ₽`
-                : `Отсаёте от плана на ${formatNumber(Math.abs(diff))} ₽`
+              : diff > 0
+                ? `Вы впереди графика на ${formatNumber(diff)} ₽`
+                : `Отстаёте от плана на ${formatNumber(Math.abs(diff))} ₽`
               }
             </p>
           </>
         )}
-        {/* Шкала заполнения */}
-        <div className="scale-block">
-          <div className="scale"
-          style={{
-            width: `${Math.min(100, progressPercent(goal))}%`,
-          }}
-          />
-        </div>
+        <ProgressBar percent={progressPercent(goal)} />
         {/* Список добавленных операций с датой и суммой */}
         <ul className="operations">
           {transactions.map((t) => (
