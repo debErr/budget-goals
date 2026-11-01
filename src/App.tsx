@@ -1,6 +1,7 @@
 import { useState, useEffect} from "react";
 import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, expectedSaved, type Transaction, type Goal } from "./goal";
 import { ProgressBar } from "./ProgressBar";
+import { TransactionList } from "./TransactionList";
 import "./App.css";
 
 function App() {
@@ -164,15 +165,7 @@ function App() {
         )}
         <ProgressBar percent={progressPercent(goal)} />
         {/* Список добавленных операций с датой и суммой */}
-        <ul className="operations">
-          {transactions.map((t) => (
-            <li className="operation" key={t.id}>
-              
-              {formatDate(t.date)}: {formatNumber(t.amount)} ₽
-              <button className="btn btn-del-operations" onClick={() => handleDel(t.id)}>Удалить</button>
-            </li>
-          ))}
-        </ul>
+        <TransactionList transactions={transactions} onDelete={handleDel} />
       </div>
     </div>
   );
