@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, type Transaction, type Goal } from "./goal";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, expectedSaved, type Transaction, type Goal } from "./goal";
 
 test("remaining считает остаток", () => {
     const goal: Goal = { title: "Машина", targetAmount: 800000, savedAmount: 127000, deadline: "2026-10-27" };
@@ -94,5 +94,37 @@ test("formatNumber: разделяет число", () => {
 
 test("formatDate: дата форматируется", () => {
     expect(formatDate("2026-10-31")).toBe("31.10.2026");
+})
+
+test("expectedSaved: четверть срока, равно началу, до начала, равно сроку, после срока", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2026-10-29", "2026-11-28")).toBe(30000);
+})
+
+test("expectedSaved: равно началу", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2026-10-29", "2026-10-29")).toBe(0);
+})
+
+test("expectedSaved: до начала", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2026-10-29", "2026-10-20")).toBe(0);
+})
+
+test("expectedSaved: сегодняшний день равен сроку", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2026-10-29", "2027-02-26")).toBe(120000);
+})
+
+test("expectedSaved: сегодняший день после срока", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2026-10-29", "2027-03-15")).toBe(120000);
+})
+
+
+
+test("expectedSaved: срок совпадает с началом", () => {
+    const goal: Goal = { title: "Машина", targetAmount: 120000, savedAmount: 0, deadline: "2027-02-26" };
+    expect(expectedSaved(goal, "2027-02-26", "2027-02-26")).toBe(120000);
 })
 

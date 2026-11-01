@@ -54,3 +54,16 @@ export function formatDate(date: string): string {
     const formatedDate = date.split("-");
     return formatedDate.reverse().join(".");
 }
+
+// Функция пересчета
+export function expectedSaved(goal: Goal, startDate: string, today: string): number {
+    const start = new Date(startDate).getTime();
+    const end = new Date(goal.deadline).getTime();
+    const now = new Date(today).getTime();
+
+    const total = end - start;
+    if (total <= 0) return goal.targetAmount;
+
+    const ratio = Math.min(1, Math.max(0, (now - start) / total));
+    return Math.round(goal.targetAmount * ratio);
+}
