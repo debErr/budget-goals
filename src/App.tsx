@@ -128,7 +128,7 @@ function App() {
           />
         </label>
         {error && <p className="error">{error}</p>}
-        <button className="btn" onClick={handleAdd}>Пополнить</button>
+        <button className="btn btn-add" onClick={handleAdd}>Пополнить</button>
         <p className="result">Осталось накопить: {formatNumber(remaining(goal))} ₽</p>
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
         {/* Шкала заполнения */}
@@ -145,7 +145,7 @@ function App() {
             <li className="operation" key={t.id}>
               
               {formatDate(t.date)}: {formatNumber(t.amount)} ₽
-              <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>
+              <button className="btn btn-del-operations" onClick={() => handleDel(t.id)}>Удалить</button>
             </li>
           ))}
         </ul>

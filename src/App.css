@@ -82,11 +82,11 @@ input[type="date"]::-webkit-date-and-time-value {
   min-height: 44px;
   background: #6b6b6b;
   color: #fff;
+  font-weight: bold;
 }
 
-.btn:hover {
-  color: #1f2330;
-  background-color: #fff;
+.btn-add:hover {
+  background-color: #49d160;
 }
 
 .field, .btn {
@@ -105,18 +105,30 @@ input[type="date"]::-webkit-date-and-time-value {
   gap: 10px;
   align-items: center;
   list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .operation {
-  display: grid;
+  /* display: grid;
   grid-template-columns: 2fr 1fr;
   justify-content: center;
+  align-items: center; */
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 
 }
 
-.btn-ul {
+.btn-del-operations {
   width: 100px;
+  transition: .3s;
+  font-weight: bold
+}
+
+.btn-del-operations:hover {
+  background-color: #c23636;
+  color: #fff;
 }
 
 .scale-block {
