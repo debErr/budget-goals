@@ -140,9 +140,9 @@ function App() {
           />
         </div>
         {/* Список добавленных операций с датой и суммой */}
-        <ul>
+        <ul className="operations">
           {transactions.map((t) => (
-            <li className="ul-li" key={t.id}>
+            <li className="operation" key={t.id}>
               
               {formatDate(t.date)}: {formatNumber(t.amount)} ₽
               <button className="btn btn-ul" onClick={() => handleDel(t.id)}>Удалить</button>

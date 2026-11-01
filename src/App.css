@@ -55,6 +55,18 @@ label {
   border-radius: 6px;
   color-scheme: dark;
   font-size: 16px;
+  background: #3a3a3a;
+  color: #fff;
+}
+
+input[type="date"].field {
+  min-height: 44px;
+  display: block;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 1.5em;
 }
 
 .field:focus, .btn:focus-visible { outline: 2px solid #4caf50; }
@@ -68,6 +80,8 @@ label {
   transition: .3s;
   -webkit-tap-highlight-color: transparent;
   min-height: 44px;
+  background: #6b6b6b;
+  color: #fff;
 }
 
 .btn:hover {
@@ -86,8 +100,23 @@ label {
   font-size: 14px;
 }
 
-.ul-li {
-  padding: 4px;
+.operations {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+  list-style-type: none;
+}
+
+.operation {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.btn-ul {
+  width: 100px;
 }
 
 .scale-block {
