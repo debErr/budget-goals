@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, expectedSaved, type Transaction, type Goal } from "./goal";
+import { progressPercent, totalSaved, positiveOrZero, type Transaction, type Goal } from "./goal";
 import { ProgressBar } from "./ProgressBar";
 import { TransactionList } from "./TransactionList";
 import { useLocalStorage } from "./useLocalStorage";
 import { Summary } from "./Summary";
+import { GoalForm } from "./GoalForm";
 import "./App.css";
 
 function App() {
@@ -24,17 +25,14 @@ function App() {
     deadline,
   }
 
-  const today = new Date().toLocaleDateString("sv-SE");
+  const [today] = useState(() => new Date().toLocaleDateString("sv-SE"));
   const isExpired = deadline !== "" && deadline < today;
-  
-  const planned = expectedSaved(goal, startDate, today);
-  const diff = totalSaved(transactions) - planned;
 
   useEffect(() => {
      if (startDate === "" && deadline && Number(targetAmount) > 0) {
        setStartDate(today);
      }
-   }, [startDate, targetAmount, deadline]);
+   }, [startDate, targetAmount, deadline, today, setStartDate]);
 
   // Добавление операций
   function handleAdd() {
@@ -83,25 +81,9 @@ function App() {
   return (
     <div className="budget-block">
       <div className="card">
-        <label>Название
-          <input className="field" placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)}   />
-        </label>
-        <label>Срок
-          <input className="field" min={today} type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
-        </label>
-        <p className="term">
-          {!deadline
-          ? "Укажите срок"
-          : isExpired
-            ? "Срок уже прошёл"
-            : `Откладывать в месяц: ${formatNumber(monthlyNeeded(goal, today))} ₽`
-          }
-        </p>
-        <label>Сумма цели
-          <input className="field" placeholder="Сумма цели" min="0" value={targetAmount} type="number" onChange={(e) => handleTargetChange(e.target.value)} />
-        </label>
+       <GoalForm goal={goal} today={today} targetAmount={targetAmount} onTitleChange={setTitle} onDeadlineChagne={setDeadline} onTargetChange={handleTargetChange}/>
         <label>Сумма пополнения
-          <input className="field" placeholder="Сумма пополнения" type="number" value={amount}
+          <input className="field" placeholder="20000" type="number" value={amount}
             onChange={(e) => {
               setAmount(e.target.value);
               setError("");
