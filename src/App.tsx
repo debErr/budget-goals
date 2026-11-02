@@ -3,6 +3,7 @@ import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, 
 import { ProgressBar } from "./ProgressBar";
 import { TransactionList } from "./TransactionList";
 import { useLocalStorage } from "./useLocalStorage";
+import { Summary } from "./Summary";
 import "./App.css";
 
 function App() {
@@ -109,24 +110,8 @@ function App() {
         </label>
         {error && <p className="error">{error}</p>}
         <button className="btn btn-add" onClick={handleAdd}>Пополнить</button>
-        <p className="result">Осталось накопить: {formatNumber(remaining(goal))} ₽</p>
+        <Summary goal={goal} startDate={startDate} today={today} />
         <p className="result">Выполнено: {progressPercent(goal)} %</p>
-        {startDate !== "" && deadline !== "" && remaining(goal) === 0 && (
-            <p className="result">Цель достигнута</p>
-        )}
-        {startDate !== "" && deadline !== "" && remaining(goal) > 0 && (
-          <>
-            <p className="result">По плану на сегодня: {formatNumber(planned)} ₽</p>
-            <p className="result">
-              {diff === 0
-              ? "Точно по плану"
-              : diff > 0
-                ? `Вы впереди графика на ${formatNumber(diff)} ₽`
-                : `Отстаёте от плана на ${formatNumber(Math.abs(diff))} ₽`
-              }
-            </p>
-          </>
-        )}
         <ProgressBar percent={progressPercent(goal)} />
         {/* Список добавленных операций с датой и суммой */}
         <TransactionList transactions={transactions} onDelete={handleDel} />
