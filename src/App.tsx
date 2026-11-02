@@ -1,53 +1,20 @@
-import { useState, useEffect} from "react";
-import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, formatDate, expectedSaved, type Transaction, type Goal } from "./goal";
+import { useState, useEffect } from "react";
+import { remaining, progressPercent, totalSaved, monthlyNeeded, positiveOrZero, formatNumber, expectedSaved, type Transaction, type Goal } from "./goal";
 import { ProgressBar } from "./ProgressBar";
 import { TransactionList } from "./TransactionList";
+import { useLocalStorage } from "./useLocalStorage";
 import "./App.css";
 
 function App() {
   // Состояние для трех полей
-  const [title, setTitle] = useState(() => load("title"));
-  const [deadline, setDeadline] = useState(() => load("deadline"));
-  const [targetAmount, setTargetAmount] = useState(() => load("targetAmount"));
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    try {
-      const saved = localStorage.getItem("transactions");
-      return saved ? JSON.parse(saved) : [];   // переводим строку обратно  в массив
-    } catch {
-      return [];
-    }
-  });
+  const [title, setTitle] = useLocalStorage("title", "");
+  const [deadline, setDeadline] = useLocalStorage("deadline", "");
+  const [targetAmount, setTargetAmount] = useLocalStorage("targetAmount", "");
+  const [startDate, setStartDate] = useLocalStorage("startDate", "");
+  const [transactions, setTransactions] = useLocalStorage<Transaction[]>("transactions", []);
+
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
-  const [startDate, setStartDate] = useState(() => load("startDate"));
-
-
-  // Сохранение состояния при обноволении страницы
-  useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions)); // Переводим массив в строку
-  }, [transactions])
-
-  useEffect(() => {
-    localStorage.setItem("title", title);
-  }, [title]);
-
-  useEffect(() => {
-    localStorage.setItem("targetAmount", targetAmount);
-  }, [targetAmount]);
-
-  useEffect(() => {
-    localStorage.setItem("deadline", deadline);
-  }, [deadline]);
-
-  useEffect(() => {
-    localStorage.setItem("startDate", startDate);
-  }, [startDate]);
-
-  useEffect(() => {
-    if (startDate === "" && deadline && Number(targetAmount) > 0) {
-      setStartDate(today);
-    }
-  }, [startDate, targetAmount, deadline]);
 
   const goal: Goal = {
     title,
@@ -62,14 +29,11 @@ function App() {
   const planned = expectedSaved(goal, startDate, today);
   const diff = totalSaved(transactions) - planned;
 
-  // Функция чтение записи 
-  function load(key: string): string {
-    try {
-      return localStorage.getItem(key) ?? "";
-    } catch {
-      return "";
-    }
-  }
+  useEffect(() => {
+     if (startDate === "" && deadline && Number(targetAmount) > 0) {
+       setStartDate(today);
+     }
+   }, [startDate, targetAmount, deadline]);
 
   // Добавление операций
   function handleAdd() {
